@@ -1,0 +1,811 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Color Match – Aum Patel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ── Theme tokens ── */
+    :root {
+      --bg:        #CBC3E3;
+      --surface:   #E8DCC4;
+      --navy:      #14213D;
+      --orange:    #BF5700;
+      --white:     #FFFFFF;
+      --text:      #14213D;
+      --sub:       #4a5568;
+      --card-bg:   #E8DCC4;
+      --ring:      #BF5700;
+      --mode-icon: "🌙";
+    }
+    [data-theme="dark"] {
+      --bg:       #0f1117;
+      --surface:  #1a1d2e;
+      --navy:     #e2e8f0;
+      --orange:   #ff7a30;
+      --white:    #1a1d2e;
+      --text:     #e2e8f0;
+      --sub:      #94a3b8;
+      --card-bg:  #1e2235;
+      --ring:     #ff7a30;
+      --mode-icon:"☀️";
+    }
+
+    /* ── Reset / base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', Georgia, serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      line-height: 1.6;
+      transition: background-color .35s, color .35s;
+    }
+
+    /* ── Nav bar ── */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 2.5px solid var(--navy);
+      border-radius: 10px;
+      padding: 12px 22px;
+      margin-bottom: 28px;
+      transition: background .35s, border-color .35s;
+    }
+    .site-nav .brand {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+    .nav-links { display: flex; gap: 18px; align-items: center; }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      transition: border-color .2s, background .2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      border-color: var(--orange);
+      background: var(--orange);
+      color: var(--white);
+    }
+    #theme-toggle {
+      background: none;
+      border: 2px solid var(--navy);
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: border-color .2s;
+    }
+    #theme-toggle:hover { border-color: var(--orange); }
+
+    /* ── Page title ── */
+    .page-title {
+      text-align: center;
+      color: var(--text);
+      background-color: var(--card-bg);
+      font-size: 38px;
+      font-weight: 800;
+      padding: 18px;
+      border: 3px solid var(--navy);
+      border-radius: 8px;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      transition: background .35s, border-color .35s, color .35s;
+    }
+    .subtitle {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 30px;
+      letter-spacing: .5px;
+    }
+
+    /* ── Game card ── */
+    .game-card {
+      background: var(--card-bg);
+      border: 3px solid var(--navy);
+      border-radius: 12px;
+      padding: 32px 36px;
+      transition: background .35s, border-color .35s;
+    }
+
+    /* ── Score / streak bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .stat-chip {
+      background: var(--bg);
+      border: 2px solid var(--navy);
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      transition: background .35s, border-color .35s, color .35s;
+    }
+    .stat-chip span { color: var(--orange); }
+
+    /* ── Phase display ── */
+    #phase-label {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 10px;
+    }
+
+    /* ── Color swatch ── */
+    .swatch-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    #color-swatch {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      border: 4px solid var(--navy);
+      background: #888;
+      transition: background-color .2s, border-color .35s;
+      position: relative;
+      overflow: hidden;
+    }
+    #color-swatch.hidden { background: #3a3a3a !important; }
+    #swatch-timer-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    /* countdown text */
+    #countdown-display {
+      font-family: 'Space Mono', monospace;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      min-height: 46px;
+      text-align: center;
+    }
+    #phase-hint {
+      font-size: 13px;
+      color: var(--sub);
+      text-align: center;
+      min-height: 20px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Sliders ── */
+    .sliders-section {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .slider-row label {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      width: 80px;
+      flex-shrink: 0;
+      color: var(--text);
+    }
+    .slider-row input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+    /* Hue slider */
+    #hue-slider {
+      background: linear-gradient(to right,
+        hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%),
+        hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%),
+        hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%),
+        hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
+    }
+    /* Saturation */
+    #sat-slider { background: linear-gradient(to right, #888, hsl(calc(var(--hval,180)*1deg),100%,50%)); }
+    /* Lightness */
+    #lit-slider { background: linear-gradient(to right, #000, hsl(calc(var(--hval,180)*1deg),80%,50%), #fff); }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid var(--navy);
+      box-shadow: 0 2px 6px rgba(0,0,0,.25);
+      transition: border-color .2s, transform .15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); border-color: var(--orange); }
+
+    .slider-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      width: 36px;
+      text-align: right;
+      color: var(--sub);
+      flex-shrink: 0;
+    }
+
+    /* ── User preview swatch ── */
+    .preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .mini-swatch {
+      width: 90px;
+      height: 90px;
+      border-radius: 8px;
+      border: 3px solid var(--navy);
+      transition: background-color .1s, border-color .35s;
+    }
+    .mini-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--sub);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .vs-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--sub);
+    }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .btn {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: 2.5px solid var(--navy);
+      cursor: pointer;
+      transition: background .2s, color .2s, transform .15s, border-color .2s;
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: var(--orange); border-color: var(--orange); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: var(--orange); color: var(--white); border-color: var(--orange); transform: translateY(-2px); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    /* ── Result panel ── */
+    #result-panel {
+      display: none;
+      background: var(--bg);
+      border: 2.5px solid var(--navy);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: center;
+      transition: background .35s, border-color .35s;
+    }
+    #result-panel h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    #result-score-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--sub);
+      margin-bottom: 14px;
+    }
+    .comparison-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .result-swatch {
+      width: 80px; height: 80px;
+      border-radius: 8px;
+      border: 3px solid var(--navy);
+    }
+    #points-badge {
+      display: inline-block;
+      background: var(--orange);
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 20px;
+      padding: 10px 24px;
+      border-radius: 30px;
+      margin-bottom: 14px;
+    }
+
+    /* ── How to play ── */
+    .how-to {
+      background: var(--bg);
+      border: 2px dashed var(--navy);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-top: 28px;
+      transition: background .35s, border-color .35s;
+    }
+    .how-to h4 {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 10px;
+    }
+    .how-to ol {
+      background: transparent;
+      padding-left: 22px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .how-to li { margin-bottom: 6px; }
+
+    /* ── Footer ── */
+    .page-footer {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      color: var(--sub);
+      font-size: 12px;
+      margin-top: 40px;
+      padding: 15px;
+      border-top: 2px dashed var(--navy);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Timer bar ── */
+    .timer-bar-wrap {
+      height: 6px;
+      background: var(--bg);
+      border-radius: 3px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      border: 1px solid var(--navy);
+    }
+    #timer-bar {
+      height: 100%;
+      background: var(--orange);
+      border-radius: 3px;
+      transition: width .1s linear, background .3s;
+    }
+
+    /* ── Animations ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(191,87,0,.5); }
+      70%  { box-shadow: 0 0 0 14px rgba(191,87,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(191,87,0,0); }
+    }
+    .pulse { animation: pulse-ring 1s ease-out; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    .shake { animation: shake .45s ease; }
+
+    @media (max-width: 600px) {
+      .game-card { padding: 20px 16px; }
+      #color-swatch { width: 160px; height: 160px; }
+      .page-title { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="site-nav">
+    <a class="brand" href="index.html">AUM PATEL</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="game.html" class="active">Color Match</a>
+      <button id="theme-toggle" title="Toggle dark/light mode">🌙</button>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <h1 class="page-title">🎨 Color Match Challenge</h1>
+  <p class="subtitle">// memorize · reconstruct · score</p>
+
+  <!-- GAME CARD -->
+  <div class="game-card">
+
+    <!-- STATS -->
+    <div class="stats-bar">
+      <div class="stat-chip">Total <span id="score-val">0</span></div>
+      <div class="stat-chip">Round <span id="round-val">0</span></div>
+      <div class="stat-chip">Streak 🔥 <span id="streak-val">0</span></div>
+      <div class="stat-chip">Best Round <span id="best-val">0</span></div>
+    </div>
+
+    <!-- TIMER BAR -->
+    <div class="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+
+    <!-- PHASE LABEL -->
+    <p id="phase-label">READY</p>
+
+    <!-- SWATCH -->
+    <div class="swatch-wrap">
+      <div id="color-swatch"></div>
+      <div id="countdown-display">—</div>
+      <p id="phase-hint">Press START to begin</p>
+    </div>
+
+    <!-- SLIDERS (hidden until guess phase) -->
+    <div class="sliders-section" id="sliders-section" style="opacity:.35; pointer-events:none;">
+      <div class="slider-row">
+        <label>Hue</label>
+        <input type="range" id="hue-slider" min="0" max="360" value="180">
+        <span class="slider-val" id="hue-val">180</span>
+      </div>
+      <div class="slider-row">
+        <label>Saturation</label>
+        <input type="range" id="sat-slider" min="0" max="100" value="50">
+        <span class="slider-val" id="sat-val">50</span>
+      </div>
+      <div class="slider-row">
+        <label>Lightness</label>
+        <input type="range" id="lit-slider" min="0" max="100" value="50">
+        <span class="slider-val" id="lit-val">50</span>
+      </div>
+    </div>
+
+    <!-- LIVE PREVIEW vs TARGET (hidden until result) -->
+    <div class="preview-row" id="preview-row" style="display:none;">
+      <div class="preview-box">
+        <div class="mini-swatch" id="target-mini"></div>
+        <div class="mini-label">Target</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="preview-box">
+        <div class="mini-swatch" id="guess-mini"></div>
+        <div class="mini-label">Your Guess</div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-row">
+      <button class="btn btn-primary" id="start-btn">▶ Start Game</button>
+      <button class="btn btn-secondary" id="submit-btn" disabled>✓ Submit Guess</button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-panel">
+      <h2 id="result-title">Nice!</h2>
+      <p id="result-score-text"></p>
+      <div class="comparison-row">
+        <div style="text-align:center">
+          <div class="result-swatch" id="res-target"></div>
+          <div class="mini-label" style="margin-top:5px">Target</div>
+        </div>
+        <div class="vs-text">→</div>
+        <div style="text-align:center">
+          <div class="result-swatch" id="res-guess"></div>
+          <div class="mini-label" style="margin-top:5px">Your Guess</div>
+        </div>
+      </div>
+      <div id="points-badge">+0 pts</div>
+      <p id="color-codes" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--sub);margin:8px 0 14px;letter-spacing:1px;"></p>
+      <button class="btn btn-primary" id="next-btn">Next Round ▶</button>
+    </div>
+
+  </div><!-- /game-card -->
+
+  <!-- HOW TO PLAY -->
+  <div class="how-to">
+    <h4>How To Play</h4>
+    <ol>
+      <li>Press <strong>Start Game</strong> — a random color appears for <strong>5 seconds</strong>.</li>
+      <li>The swatch goes dark. You have <strong>10 seconds</strong> to reconstruct it with the H / S / L sliders.</li>
+      <li>Hit <strong>Submit Guess</strong> (or let the timer run out) — you score up to <strong>100 points</strong> based on how close you are.</li>
+      <li>Colors get trickier as your streak builds. See how high you can go!</li>
+    </ol>
+  </div>
+
+  <footer class="page-footer">Copyright &copy; 2026 Aum Patel. All Rights Reserved.</footer>
+
+<script>
+/* ─── Theme toggle ─── */
+const themeBtn = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme') || 'light';
+if (saved === 'dark') { document.documentElement.setAttribute('data-theme','dark'); themeBtn.textContent = '☀️'; }
+themeBtn.addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeBtn.textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+});
+
+/* ─── DOM refs ─── */
+const hueSlider  = document.getElementById('hue-slider');
+const satSlider  = document.getElementById('sat-slider');
+const litSlider  = document.getElementById('lit-slider');
+const hueVal     = document.getElementById('hue-val');
+const satVal     = document.getElementById('sat-val');
+const litVal     = document.getElementById('lit-val');
+const guessMini  = document.getElementById('guess-mini');
+const targetMini = document.getElementById('target-mini');
+const swatch     = document.getElementById('color-swatch');
+const countdown  = document.getElementById('countdown-display');
+const phaseLabel = document.getElementById('phase-label');
+const phaseHint  = document.getElementById('phase-hint');
+const timerBar   = document.getElementById('timer-bar');
+const slidersEl  = document.getElementById('sliders-section');
+const previewRow = document.getElementById('preview-row');
+const startBtn   = document.getElementById('start-btn');
+const submitBtn  = document.getElementById('submit-btn');
+const resultPanel = document.getElementById('result-panel');
+
+/* ─── Game state ─── */
+let phase = 'idle';
+let targetH, targetS, targetL;
+let score = 0, roundNum = 0, streak = 0, best = 0;
+let timerInterval = null;
+let timeLeft = 0;
+
+/* ─── Slider update ─── */
+function updateGuessColor() {
+  const h = hueSlider.value, s = satSlider.value, l = litSlider.value;
+  hueVal.textContent = h;
+  satVal.textContent = s;
+  litVal.textContent = l;
+  const col = `hsl(${h},${s}%,${l}%)`;
+  if (phase === 'guess') {
+    swatch.style.background = col;
+  }
+  satSlider.style.background = `linear-gradient(to right, #888, hsl(${h},100%,50%))`;
+  litSlider.style.background = `linear-gradient(to right, #000, hsl(${h},80%,50%), #fff)`;
+  document.documentElement.style.setProperty('--hval', h);
+}
+[hueSlider, satSlider, litSlider].forEach(el => el.addEventListener('input', updateGuessColor));
+satSlider.style.background = 'linear-gradient(to right, #888, hsl(180,100%,50%))';
+litSlider.style.background = 'linear-gradient(to right, #000, hsl(180,80%,50%), #fff)';
+
+/* ─── Score display ─── */
+function setScoreDisplay() {
+  document.getElementById('score-val').textContent  = score;
+  document.getElementById('round-val').textContent  = roundNum;
+  document.getElementById('streak-val').textContent = streak;
+  document.getElementById('best-val').textContent   = best;
+}
+
+/* ─── Color math ─── */
+function generateTarget() {
+  targetH = Math.floor(Math.random() * 360);
+  targetS = 35 + Math.floor(Math.random() * 60);
+  targetL = 25 + Math.floor(Math.random() * 50);
+}
+
+/* Convert HSL -> linear RGB -> XYZ -> CIE Lab, then deltaE76 */
+function hsl2lab(h, s, l) {
+  // HSL to sRGB
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  let r = f(0), g = f(8), b = f(4);
+  // sRGB to linear
+  const lin = c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  r = lin(r); g = lin(g); b = lin(b);
+  // linear RGB to XYZ (D65)
+  let x = r*0.4124564 + g*0.3575761 + b*0.1804375;
+  let y = r*0.2126729 + g*0.7151522 + b*0.0721750;
+  let z = r*0.0193339 + g*0.1191920 + b*0.9503041;
+  // XYZ to Lab
+  const xn=0.95047, yn=1.00000, zn=1.08883;
+  const flab = t => t > 0.008856 ? Math.cbrt(t) : (7.787*t + 16/116);
+  const fx = flab(x/xn), fy = flab(y/yn), fz = flab(z/zn);
+  return [116*fy - 16, 500*(fx - fy), 200*(fy - fz)];
+}
+
+function deltaE(h1,s1,l1, h2,s2,l2) {
+  const [L1,a1,b1] = hsl2lab(h1,s1,l1);
+  const [L2,a2,b2] = hsl2lab(h2,s2,l2);
+  return Math.sqrt((L1-L2)**2 + (a1-a2)**2 + (b1-b2)**2);
+}
+
+/* ─── Timer ─── */
+function clearTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function runTimer(seconds, onEnd) {
+  clearTimer();
+  timeLeft = seconds;
+  const total = seconds;
+  countdown.textContent = Math.ceil(timeLeft);
+  timerBar.style.width = '100%';
+  timerBar.style.background = 'var(--orange)';
+  timerInterval = setInterval(() => {
+    timeLeft -= 0.1;
+    if (timeLeft <= 0) {
+      clearTimer();
+      countdown.textContent = '0';
+      timerBar.style.width = '0%';
+      onEnd();
+      return;
+    }
+    countdown.textContent = Math.ceil(timeLeft);
+    const pct = (timeLeft / total) * 100;
+    timerBar.style.width = pct + '%';
+    timerBar.style.background = pct < 30 ? '#e53e3e' : 'var(--orange)';
+  }, 100);
+}
+
+/* ─── Game phases ─── */
+function startMemorize() {
+  clearTimer();
+  resultPanel.style.display = 'none';
+  generateTarget();
+  roundNum++;
+  setScoreDisplay();
+
+  const col = `hsl(${targetH},${targetS}%,${targetL}%)`;
+  swatch.style.background = col;
+  targetMini.style.background = col;
+
+  hueSlider.value = 180; satSlider.value = 50; litSlider.value = 50;
+  hueVal.textContent = 180; satVal.textContent = 50; litVal.textContent = 50;
+  satSlider.style.background = 'linear-gradient(to right, #888, hsl(180,100%,50%))';
+  litSlider.style.background = 'linear-gradient(to right, #000, hsl(180,80%,50%), #fff)';
+
+  slidersEl.style.opacity = '0.35';
+  slidersEl.style.pointerEvents = 'none';
+  previewRow.style.display = 'none';
+  submitBtn.disabled = true;
+  startBtn.disabled = true;
+
+  phase = 'memorize';
+  phaseLabel.textContent = 'MEMORIZE';
+  phaseHint.textContent = 'Study the color — it disappears soon!';
+
+  runTimer(5, startGuess);
+}
+
+function startGuess() {
+  phase = 'guess';
+  swatch.style.background = 'hsl(180,50%,50%)';
+
+  phaseLabel.textContent = 'MATCH IT';
+  phaseHint.textContent = 'Drag the sliders — the square shows your current guess!';
+
+  slidersEl.style.opacity = '1';
+  slidersEl.style.pointerEvents = 'auto';
+  previewRow.style.display = 'none';
+  submitBtn.disabled = false;
+
+  runTimer(10, submitGuess);
+}
+
+function submitGuess() {
+  if (phase !== 'guess') return;
+  clearTimer();
+  phase = 'result';
+
+  const gH = parseInt(hueSlider.value);
+  const gS = parseInt(satSlider.value);
+  const gL = parseInt(litSlider.value);
+  const guessCol  = `hsl(${gH},${gS}%,${gL}%)`;
+  const targetCol = `hsl(${targetH},${targetS}%,${targetL}%)`;
+
+  const dE       = deltaE(targetH,targetS,targetL, gH,gS,gL);
+  // deltaE: 0=identical, <2=imperceptible, <10=noticeable, ~100=max diff
+  const accuracy = Math.max(0, 1 - dE / 100);
+  const pts      = Math.round(accuracy * 100);
+
+  score += pts;
+  streak = pts >= 60 ? streak + 1 : 0;
+  if (pts > best) best = pts;
+  setScoreDisplay();
+
+  guessMini.style.background = guessCol;
+  document.getElementById('res-target').style.background = targetCol;
+  document.getElementById('res-guess').style.background  = guessCol;
+  document.getElementById('points-badge').textContent    = `+${pts} pts`;
+
+  let title, hint;
+  if      (pts >= 90) { title = '🎯 Perfect!';     hint = `Incredible eye — ${pts}/100 pts`; }
+  else if (pts >= 70) { title = '🔥 Great match!'; hint = `Really close — ${pts}/100 pts`; }
+  else if (pts >= 45) { title = '👍 Not bad!';     hint = `Keep practicing — ${pts}/100 pts`; }
+  else                { title = '😅 Way off…';     hint = `${pts}/100 pts — better luck next round`; }
+
+  document.getElementById('result-title').textContent      = title;
+  document.getElementById('result-score-text').textContent = hint;
+
+  // Show actual hex codes
+  function hslToHex(h, s, l) {
+    s /= 100; l /= 100;
+    const k = n => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => Math.round((l - a * Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)))) * 255);
+    return '#' + [f(0),f(8),f(4)].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+  const targetHex = hslToHex(targetH, targetS, targetL);
+  const guessHex  = hslToHex(gH, gS, gL);
+  document.getElementById('color-codes').textContent = `Target: ${targetHex}   →   You: ${guessHex}   (ΔE: ${dE.toFixed(1)})`;
+
+  previewRow.style.display = 'flex';
+  resultPanel.style.display = 'block';
+
+  slidersEl.style.opacity = '0.35';
+  slidersEl.style.pointerEvents = 'none';
+  submitBtn.disabled = true;
+  startBtn.disabled = false;
+  startBtn.textContent = '▶ New Round';
+
+  phaseLabel.textContent = 'RESULT';
+  phaseHint.textContent  = '';
+  countdown.textContent  = '—';
+  timerBar.style.width   = '100%';
+  timerBar.style.background = 'var(--orange)';
+}
+
+/* ─── Event listeners ─── */
+startBtn.addEventListener('click', startMemorize);
+submitBtn.addEventListener('click', submitGuess);
+document.getElementById('next-btn').addEventListener('click', startMemorize);
+
+setScoreDisplay();
+</script>
+</body>
+</html>
