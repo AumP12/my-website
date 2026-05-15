@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <!--The <title> tag is the name that shows up in the browser tab-->
+  <title>Aum Patel's Webpage</title>
+
+  <!--This line connects our HTML page to a separate CSS file called style.css.
+      CSS controls how the page looks (colors, fonts, spacing).
+      Keeping CSS in its own file is a best practice—it keeps HTML clean.-->
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #E8DCC4;
+      border: 2.5px solid #14213D;
+      border-radius: 10px;
+      padding: 12px 22px;
+      margin-bottom: 28px;
+    }
+    .site-nav .brand {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 15px;
+      color: #14213D;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #14213D;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      transition: border-color .2s, background .2s, color .2s;
+    }
+    .nav-links a:hover {
+      background: none;
+      padding: 6px 14px;
+    }
+    .nav-links a.active,
+    .nav-links a:hover {
+      border-color: #BF5700;
+      background-color: #BF5700;
+      color: #FFFFFF;
+    }
+    @media (max-width: 600px) {
+      .site-nav { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="site-nav">
+    <a class="brand" href="index.html">AUM PATEL</a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="game.html">🎨 Color Match</a>
+    </div>
+  </nav>
+
+  <!--This is the title at the top of the page-->
+  <h1 class="page-title">Aum Patel's Webpage</h1>
+
+  <!--Three photos in a horizontal row.
+      The middle one is NOT actually me—see the caption below.
+      Lesson for class: alt text should always be honest about what an image is.-->
+  <div class="photo-row">
+    <img class="row-photo"
+         alt="AumP "
+         src="unnamed.jpg" />
+    <img class="row-photo"
+         alt="Clint playing acoustic guitar on stage, black and white photo"
+         src="https://static.vecteezy.com/system/resources/thumbnails/050/393/628/small_2x/cute-curious-gray-and-white-kitten-in-a-long-shot-photo.jpg" />
+  </div>
+  <p class="caption">
+    <em>Aump and his cat</em>
+  </p>
+
+  <!--This is the About Me paragraph-->
+  <p class="about-me">
+    I’m Aum Patel, a freshman at the McCombs School of Business at UT Austin with internship experience at American Airlines and PepsiCo. I’m interested in business and tech and companies use data to make decisions. Outside of school, I’m usually playing basketball, trying new food spots, traveling, or catching up on shows.
+  </p>
+
+  <hr />
+
+  <!--Work experience as a bulleted list-->
+<h3>My Work Experience</h3>
+<ul>
+  <li><strong>American Airlines</strong> &mdash; Data Engineering Intern (June 2025 &ndash; August 2025)</li>
+  <li><strong>PepsiCo</strong> &mdash; High School Intern (June 2024 &ndash; July 2024)</li>
+  <li><strong>Carefree Inn</strong> &mdash; Desk Clerk (2018 &ndash; 2024)</li>
+</ul>
+
+<hr />
+
+  <!--My Favorite Things: a bulleted list of links-->
+<h3>My Favorite Things</h3>
+<ul>
+  <li>
+    <a href="https://www.imdb.com/" target="_blank">Movies</a>
+    &mdash; favorites include <em>Pirates of the Caribbean</em>, <em>Interstellar</em>, and <em>Johnny English</em>
+  </li>
+  <li>
+    <a href="https://open.spotify.com/" target="_blank">Music</a>
+    &mdash; all types of music
+  </li>
+  <li>
+    <a href="https://www.instagram.com/" target="_blank">My Friends</a>
+    &mdash; hanging out, getting food, playing basketball
+  </li>
+</ul>
+
+<hr />
+
+  <!--YouTube videos: each one is an iframe.
+      Tip for students: to add your own, go to YouTube > Share > Embed,
+      and copy the FULL iframe tag.-->
+  <h3>Random fun video</h3>
+
+  <div class="video-grid">
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/L3tsYC5OYhQ?si=-v5Lk6flH-SBEfAQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+
+  <hr />
+
+  <!--Contact section.
+      The mailto: link opens the user's email program.
+      LinkedIn opens in a new tab.-->
+  <h3>Contact Me</h3>
+  <p class="contact-line">
+    <a href="mailto:aumpatel9116@gmail.com">aumpatel9116@gmail.com</a>
+    &nbsp;|&nbsp;
+<a href="https://www.linkedin.com/in/aumpatel0" target="_blank">
+  My LinkedIn Profile
+</a>
+
+  <!--Footer with copyright-->
+  <footer class="page-footer">
+    Copyright &copy; 2026 Aum Patel. All Rights Reserved.
+  </footer>
+
+</body>
+</html>
